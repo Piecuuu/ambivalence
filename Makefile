@@ -1,0 +1,26 @@
+SRC = src
+OBJS = $(SRC)/main.o
+
+PROGRAM = bot
+
+CC   ?= cc
+CCLD ?= $(CC)
+
+CFLAGS ?= -O2
+CFLAGS += -std=c99
+
+LDFLAGS += -L/usr/local/lib -lcurl -ldiscord
+
+.PHONY: clean all $(PROGRAM)
+.SUFFIXES: .c .o
+
+.c.o:
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(PROGRAM): $(OBJS)
+	$(CCLD) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
+
+all: $(PROGRAM)
+
+clean:
+	rm -vf $(OBJS) $(PROGRAM)
