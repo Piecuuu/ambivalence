@@ -13,7 +13,7 @@
       fhs = pkgs.buildFHSEnv {
         name = "fhs-shell";
         targetPkgs = pkgs: with pkgs; [
-          gnumake gcc curl curl.dev concord-dev
+          gnumake gcc curlFull curlFull.dev concord-dev
         ];
       };
     in
