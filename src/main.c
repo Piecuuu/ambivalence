@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "events.h"
 
 int main() {
   const char* token = getenv("BOT_TOKEN");
@@ -16,7 +17,7 @@ int main() {
   }
 
   struct discord* client = discord_from_token(token);
-  
+  am_events_register_all(client);
   discord_run(client);
   return 0;
 }
