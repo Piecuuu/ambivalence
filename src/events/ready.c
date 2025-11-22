@@ -1,3 +1,8 @@
+/*
+ * This code is licensed under the European Union Public Licence, Version 1.2
+ * See LICENSE in the root of the repository for details.
+ */
+
 #include <concord/logmod.h>
 #include <concord/discord.h>
 #include "../events.h"
