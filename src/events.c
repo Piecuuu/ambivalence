@@ -1,8 +1,8 @@
 #include "events.h"
 
-#include "events/ready.h"
-
 #define am_array_length(array) (sizeof(array) / sizeof(array[0]))
+
+extern const struct am_event am_event_ready;
 
 const struct am_event* events_list[] = {
   &am_event_ready,

@@ -1,5 +1,6 @@
-#include "ready.h"
 #include <concord/logmod.h>
+#include <concord/discord.h>
+#include "../events.h"
 #include <stdio.h>
 
 void am_event_ready_run(struct discord* client, const struct discord_ready* event) {
