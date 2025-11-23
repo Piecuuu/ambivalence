@@ -7,9 +7,10 @@
 #include <concord/logmod.h>
 #include "../events.h"
 #include <stdio.h>
+#include "../handlers/reaction_role.h"
 
 void am_event_message_reaction_add_run(struct discord* client, const struct discord_message_reaction_add *event) {
-  if(!event->guild_id) return;
+  am_reaction_role_reaction_add_hook(client, event);
   logmod_log(INFO, NULL, "We've got a reaction %s (%s) from %"PRIu64" on message %"PRIu64, event->emoji->id, event->emoji->name, event->user_id, event->message_id);
 }
 
