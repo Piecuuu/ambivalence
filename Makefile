@@ -1,6 +1,6 @@
 SRC = src
 EVENTS = $(SRC)/events
-OBJS = $(SRC)/main.o $(SRC)/events.o $(EVENTS)/ready.o
+OBJS = $(SRC)/main.o $(SRC)/events.o $(SRC)/db.o $(EVENTS)/ready.o
 
 PROGRAM = bot
 
@@ -10,7 +10,7 @@ CCLD ?= $(CC)
 CFLAGS ?= -O2
 CFLAGS += -std=c99
 
-LDFLAGS += -L/usr/local/lib -lcurl -ldiscord
+LDFLAGS += -L/usr/local/lib -lcurl -ldiscord -lsqlite3
 
 .PHONY: clean all $(PROGRAM)
 .SUFFIXES: .c .o
