@@ -13,7 +13,7 @@
       fhs = pkgs.buildFHSEnv {
         name = "fhs-shell";
         targetPkgs = pkgs: with pkgs; [
-          gnumake gcc curlFull curlFull.dev concord-dev
+          gnumake gcc curlFull curlFull.dev concord-dev sqlite sqlite.dev
         ];
       };
     in
