@@ -19,6 +19,6 @@ void am_event_message_reaction_add_register(struct discord* client) {
 }
 
 const struct am_event am_event_message_reaction_add = {
-  .name = "simple_message_reaction_add",
+  .name = "message_reaction_add",
   .reg = &am_event_message_reaction_add_register
 };
