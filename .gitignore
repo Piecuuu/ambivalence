@@ -1,2 +1,6 @@
+.vscode
+
 bot
 *.o
+*.sqlite3
+*.db
