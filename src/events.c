@@ -9,9 +9,10 @@
 
 extern const struct am_event am_event_ready;
 extern const struct am_event am_event_message_reaction_add;
+extern const struct am_event am_event_message_reaction_remove;
 
 const struct am_event* events_list[] = {
-  &am_event_ready, &am_event_message_reaction_add,
+  &am_event_ready, &am_event_message_reaction_add, &am_event_message_reaction_remove,
 };
 
 void am_events_register_all(struct discord* client) {

@@ -116,12 +116,52 @@ int am_reaction_role_add_reaction_role(const struct am_reaction_role* reaction_r
   rc = sqlite3_step(stmt);
   if(check_fail_step(rc, stmt)) return 1;
 
+  sqlite3_finalize(stmt);
+  return 0;
+}
+
+
+// Two ways to remove - provide oid and/or provide both message_id and emoji (or emoji_id)
+int am_reaction_role_remove_reaction_role(const struct am_reaction_role* reaction_role) {
+  sqlite3_stmt* stmt;
+  int rc;
+
+  if(reaction_role->oid != -1) {
+    rc = sqlite3_prepare_v2(am_db, "DELETE FROM am_reaction_roles WHERE rowid = ?", -1, &stmt, 0);
+    if(check_fail_prepared_stmt(rc, stmt)) return 1;
+
+    rc = sqlite3_bind_int64(stmt, 1, reaction_role->oid);
+    if(check_fail_bind_param(rc, stmt)) return 1;
+
+    rc = sqlite3_step(stmt);
+    if(check_fail_step(rc, stmt)) return 1;
+
+    sqlite3_finalize(stmt);
+    return 0;
+  }
+
+  _Bool is_custom_emoji = check_if_custom_emoji(reaction_role->emoji, reaction_role->emoji_id);
+
+  rc = is_custom_emoji ?
+    sqlite3_prepare_v2(am_db, "DELETE_FROM am_reaction_roles WHERE emoji_id = ? AND message_id = ?", -1, &stmt, 0) :
+    sqlite3_prepare_v2(am_db, "DELETE FROM am_reaction_roles WHERE emoji = ? AND message_id = ?", -1, &stmt, 0);
+  if(check_fail_prepared_stmt(rc, stmt)) return 1;
+
+  rc = is_custom_emoji ?
+    sqlite3_bind_int64(stmt, 1, reaction_role->emoji_id) :
+    sqlite3_bind_text(stmt, 1, reaction_role->emoji, -1, SQLITE_STATIC);
+  if(check_fail_bind_param(rc, stmt)) return 1;
+
+  sqlite3_bind_int64(stmt, 2, reaction_role->message_id);
+
+  rc = sqlite3_step(stmt);
+  if(check_fail_step(rc, stmt)) return 1;
+
   return 0;
 }
 
 int am_reaction_role_reaction_add_hook(struct discord* client, const struct discord_message_reaction_add *event) {
   if(!event->guild_id) return 1;
-  _Bool is_custom_emoji = check_if_custom_emoji(event->emoji->name, event->emoji->id);
   struct am_reaction_role* reaction_role = am_reaction_role_get_from_message_and_emoji(event->message_id, event->emoji->name, event->emoji->id);
   if(reaction_role == NULL) return 1;
 
@@ -145,6 +185,47 @@ int am_reaction_role_reaction_add_hook(struct discord* client, const struct disc
   code = discord_add_guild_member_role(client, event->guild_id, event->user_id, reaction_role->role_id, &role_params, NULL);
   if(code != CCORD_OK) {
     logmod_log(ERROR, NULL, "Couldn't give role to member %"PRIu64" on %"PRIu64" (reaction roles), code: %d", event->user_id, event->guild_id, code);
+    free(reaction_role);
+    return 1;
+  }
+
+  free(reaction_role);
+  return 0;
+}
+
+int am_reaction_role_reaction_remove_hook(struct discord* client, const struct discord_message_reaction_remove *event) {
+  if(!event->guild_id) return 1;
+  struct am_reaction_role* reaction_role = am_reaction_role_get_from_message_and_emoji(event->message_id, event->emoji->name, event->emoji->id);
+  if(reaction_role == NULL) return 1;
+
+  struct discord_guild_member member;
+  struct discord_ret_guild_member member_ret = { .sync = &member };
+  CCORDcode code = discord_get_guild_member(client, event->guild_id, event->user_id, &member_ret);
+  if(code != CCORD_OK) {
+    logmod_log(ERROR, NULL, "Couldn't fetch member %"PRIu64" for %"PRIu64", code: %d", event->user_id, event->guild_id, code);
+    free(reaction_role);
+    return 1;
+  }
+
+  _Bool has_role = false;
+  for(int i = 0; i < member.roles->size; i++) {
+    if(member.roles->array[i] == reaction_role->role_id) {
+      has_role = true;
+      break;
+    }
+  }
+  if(!has_role) {
+    free(reaction_role);
+    return 1;
+  }
+
+  struct discord_remove_guild_member_role role_params = {
+    .reason = "Reaction role remove"
+  };
+
+  code = discord_remove_guild_member_role(client, event->guild_id, event->user_id, reaction_role->role_id, &role_params, NULL);
+  if(code != CCORD_OK) {
+    logmod_log(ERROR, NULL, "Couldn't remove role from member %"PRIu64" on %"PRIu64" (reaction roles), code: %d", event->user_id, event->guild_id, code);
     free(reaction_role);
     return 1;
   }

@@ -1,7 +1,7 @@
 SRC = src
 EVENTS = $(SRC)/events
 HANDLERS = $(SRC)/handlers
-OBJS = $(SRC)/main.o $(SRC)/events.o $(SRC)/db.o $(EVENTS)/ready.o $(EVENTS)/message_reaction_add.o $(HANDLERS)/reaction_role.o
+OBJS = $(SRC)/main.o $(SRC)/events.o $(SRC)/db.o $(EVENTS)/ready.o $(EVENTS)/message_reaction_add.o $(EVENTS)/message_reaction_remove.o $(HANDLERS)/reaction_role.o
 
 PROGRAM = bot
 
