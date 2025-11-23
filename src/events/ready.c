@@ -3,8 +3,8 @@
  * See LICENSE in the root of the repository for details.
  */
 
-#include <concord/logmod.h>
 #include <concord/discord.h>
+#include <concord/logmod.h>
 #include "../events.h"
 #include <stdio.h>
 
