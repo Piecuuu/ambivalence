@@ -3,8 +3,8 @@
  * See LICENSE in the root of the repository for details.
  */
 
-#ifndef EVENTS_H
-#define EVENTS_H
+#ifndef AM_EVENTS_H
+#define AM_EVENTS_H
 
 #include <concord/discord.h>
 
@@ -15,4 +15,4 @@ struct am_event {
 
 void am_events_register_all(struct discord* client);
 
-#endif // EVENTS_H
+#endif // AM_EVENTS_H
